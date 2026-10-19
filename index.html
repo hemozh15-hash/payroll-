@@ -1,0 +1,160 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>حساب المرتبات - RAVIN INTERNATIONAL TRADING</title>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@400;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #0f172a;
+            --secondary: #2563eb;
+            --accent: #059669;
+            --bg-color: #f1f5f9;
+            --card-bg: #ffffff;
+            --text-main: #334155;
+            --border-color: #e2e8f0;
+        }
+        * { box-sizing: border-box; margin: 0; padding: 0; font-family: 'Cairo', sans-serif; }
+        body { background-color: var(--bg-color); color: var(--text-main); min-height: 100vh; display: flex; justify-content: center; align-items: center; padding: 20px; }
+        .container { width: 100%; max-width: 550px; background: var(--card-bg); border-radius: 20px; box-shadow: 0 20px 35px -10px rgba(15, 23, 42, 0.12); overflow: hidden; border: 1px solid var(--border-color); }
+        
+        .header { background: linear-gradient(135deg, #0f172a 0%, #1e293b 100%); color: white; padding: 30px 20px; text-align: center; border-bottom: 5px solid var(--secondary); }
+        .logo-placeholder { width: 70px; height: 70px; background: white; border-radius: 50%; margin: 0 auto 12px auto; display: flex; align-items: center; justify-content: center; font-weight: 900; color: var(--primary); font-size: 1.1rem; box-shadow: 0 5px 15px rgba(0,0,0,0.2); border: 3px solid rgba(255,255,255,0.2); }
+        .header h1 { font-size: 1.3rem; font-weight: 900; letter-spacing: 0.5px; margin-bottom: 4px; }
+        .header p { font-size: 0.85rem; color: #94a3b8; font-weight: 600; }
+
+        .form-body { padding: 30px; }
+        .mode-selector { display: flex; background: #f8fafc; border-radius: 12px; padding: 6px; margin-bottom: 25px; border: 1px solid var(--border-color); }
+        .mode-btn { flex: 1; padding: 12px; border: none; background: transparent; font-family: 'Cairo', sans-serif; font-weight: 700; font-size: 0.9rem; color: #64748b; border-radius: 8px; cursor: pointer; transition: all 0.3s ease; }
+        .mode-btn.active { background: var(--secondary); color: white; box-shadow: 0 4px 12px rgba(37, 99, 235, 0.25); }
+
+        .input-group { margin-bottom: 25px; }
+        .input-group label { display: block; font-weight: 700; margin-bottom: 10px; color: var(--primary); font-size: 1rem; }
+        .input-field-wrapper { position: relative; }
+        .input-group input { width: 100%; padding: 16px 20px; font-size: 1.2rem; font-weight: 800; border: 2px solid var(--border-color); border-radius: 12px; outline: none; transition: all 0.3s; background: #fafafa; color: #0f172a; text-align: left; direction: ltr; }
+        .input-group input:focus { border-color: var(--secondary); background: #fff; box-shadow: 0 0 0 4px rgba(37, 99, 235, 0.1); }
+        .currency-tag { position: absolute; right: 20px; top: 50%; transform: translateY(-50%); font-weight: 700; color: #64748b; font-size: 0.95rem; }
+
+        .results-card { background: #f8fafc; border-radius: 14px; border: 1px solid var(--border-color); padding: 25px; text-align: center; margin-top: 20px; }
+        .result-label { color: #64748b; font-weight: 700; font-size: 1.05rem; margin-bottom: 8px; display: block; }
+        .result-value { font-weight: 900; color: var(--accent); font-size: 2.2rem; direction: ltr; }
+
+        .footer-branding { text-align: center; padding: 18px; background: #f8fafc; font-size: 0.8rem; color: #64748b; border-top: 1px solid var(--border-color); font-weight: 700; }
+    </style>
+</head>
+<body>
+
+    <div class="container">
+        <div class="header">
+            <div class="logo-placeholder">RAVIN</div>
+            <h1>RAVIN INTERNATIONAL TRADING</h1>
+            <p>حاسبة الرواتب السريعة</p>
+        </div>
+
+        <div class="form-body">
+            <div class="mode-selector">
+                <button class="mode-btn active" id="btnGrossToNet" onclick="setMode('grossToNet')">من الإجمالي للصافي</button>
+                <button class="mode-btn" id="btnNetToGross" onclick="setMode('netToGross')">من الصافي للإجمالي</button>
+            </div>
+
+            <div class="input-group">
+                <label id="inputLabel" for="mainInput">الراتب الإجمالي (الجروس)</label>
+                <div class="input-field-wrapper">
+                    <input type="number" id="mainInput" placeholder="0.00" oninput="calculateSalary()">
+                    <span class="currency-tag">ج.م</span>
+                </div>
+            </div>
+
+            <div class="results-card">
+                <span class="result-label" id="lblTargetName">الراتب الصافي (النت)</span>
+                <div class="result-value" id="resTarget">0.00 ج.م</div>
+            </div>
+        </div>
+
+        <div class="footer-branding">
+            RAVIN INTERNATIONAL TRADING © 2026 — Designed by HR EBRAHIM HASSAN
+        </div>
+    </div>
+
+    <script>
+        let currentMode = 'grossToNet';
+
+        function setMode(mode) {
+            currentMode = mode;
+            document.getElementById('btnGrossToNet').classList.toggle('active', mode === 'grossToNet');
+            document.getElementById('btnNetToGross').classList.toggle('active', mode === 'netToGross');
+            
+            if (mode === 'grossToNet') {
+                document.getElementById('inputLabel').innerText = 'الراتب الإجمالي (الجروس)';
+                document.getElementById('lblTargetName').innerText = 'الراتب الصافي (النت)';
+            } else {
+                document.getElementById('inputLabel').innerText = 'الراتب الصافي المطلوب (النت)';
+                document.getElementById('lblTargetName').innerText = 'الراتب الإجمالي الناتج (الجروس)';
+            }
+            document.getElementById('mainInput').value = '';
+            document.getElementById('resTarget').innerText = '0.00 ج.م';
+        }
+
+        function calculateIncomeTax(annualTaxable) {
+            if (annualTaxable <= 0) return 0;
+            let tax = 0;
+            if (annualTaxable <= 40000) {
+                tax = 0;
+            } else if (annualTaxable <= 55000) {
+                tax = (annualTaxable - 40000) * 0.10;
+            } else if (annualTaxable <= 70000) {
+                tax = 1500 + (annualTaxable - 55000) * 0.15;
+            } else if (annualTaxable <= 200000) {
+                tax = 3750 + (annualTaxable - 70000) * 0.20;
+            } else if (annualTaxable <= 400000) {
+                tax = 29750 + (annualTaxable - 200000) * 0.225;
+            } else {
+                tax = 74750 + (annualTaxable - 400000) * 0.25;
+            }
+            return Math.max(0, tax);
+        }
+
+        function computeFromGross(gross) {
+            let insSal = gross * (6 / 7.75);
+            let empIns = insSal * 0.11;
+            let annualGross = gross * 12;
+            let annualEmpIns = empIns * 12;
+            let annualTaxable = (annualGross - annualEmpIns) - 20000;
+            let annualTax = calculateIncomeTax(annualTaxable);
+            let monthlyTax = annualTax / 12;
+            return gross - empIns - monthlyTax;
+        }
+
+        function calculateSalary() {
+            let val = parseFloat(document.getElementById('mainInput').value);
+            if (isNaN(val) || val <= 0) {
+                document.getElementById('resTarget').innerText = '0.00 ج.م';
+                return;
+            }
+
+            if (currentMode === 'grossToNet') {
+                let net = computeFromGross(val);
+                document.getElementById('resTarget').innerText = net.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ج.م';
+            } else {
+                let low = val;
+                let high = val * 2;
+                let estimatedGross = val;
+                
+                for (let i = 0; i < 40; i++) {
+                    let mid = (low + high) / 2;
+                    let net = computeFromGross(mid);
+                    if (net < val) {
+                        low = mid;
+                    } else {
+                        high = mid;
+                    }
+                    estimatedGross = mid;
+                }
+
+                document.getElementById('resTarget').innerText = estimatedGross.toLocaleString('en-US', {minimumFractionDigits: 2, maximumFractionDigits: 2}) + ' ج.م';
+            }
+        }
+    </script>
+</body>
+</html>
